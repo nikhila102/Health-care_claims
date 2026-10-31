@@ -26,3 +26,14 @@ Saved outputs were cleared after the prediction fix. The full notebook has not b
 ## Next milestone
 
 Establish data provenance, add a reproducible train/test split and baseline comparison, and report held-out MAE/RMSE with dataset and environment details. Use synthetic data for integration tests. This educational project is not suitable for clinical, coverage, or pricing decisions.
+
+## Runnable synthetic evaluation
+
+```bash
+python src/evaluate_synthetic.py > synthetic-evaluation.json
+python -m unittest discover -s tests -v
+```
+
+This separate demonstration generates 500 synthetic rows with a seeded, invented linear relationship and noise. It trains on 400 rows, evaluates on 100 disjoint held-out rows, and compares linear regression with a training-mean baseline using MAE and RMSE. The JSON includes the seed, split indices, and Python/library versions for auditing. The test checks repeatability, split isolation, and baseline improvement on this deliberately simple synthetic problem.
+
+This script does not read the existing CSV or execute the notebook. Synthetic results demonstrate the evaluation workflow only; they do not establish real-world healthcare accuracy. Exact dependency versions are recorded in each output but are not yet locked for cross-environment reproducibility.
