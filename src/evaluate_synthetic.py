@@ -1,5 +1,7 @@
 """Reproducible synthetic-only regression evaluation. No patient data or services."""
+import argparse
 import json
+from pathlib import Path
 import platform
 import numpy as np
 import pandas as pd
@@ -35,5 +37,21 @@ def evaluate(seed=42):
         "metrics": metrics,
     }
 
+def main(argv=None):
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--seed", type=int, default=42, help="Nonnegative random seed")
+    parser.add_argument("--output", type=Path, help="Save JSON to a new file; refuses overwrites")
+    args = parser.parse_args(argv)
+    if args.seed < 0:
+        parser.error("--seed must be nonnegative")
+    report = json.dumps(evaluate(args.seed), indent=2, allow_nan=False) + "\n"
+    if args.output:
+        # Exclusive creation avoids silently replacing a previous experiment.
+        with args.output.open("x", encoding="utf-8") as stream:
+            stream.write(report)
+    else:
+        print(report, end="")
+    return 0
+
 if __name__ == "__main__":
-    print(json.dumps(evaluate(), indent=2, allow_nan=False))
+    raise SystemExit(main())
