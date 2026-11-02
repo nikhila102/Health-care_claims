@@ -41,3 +41,15 @@ This script does not read the existing CSV or execute the notebook. Synthetic re
 ## Validation status
 
 Both unittest checks passed together in the available development environment on November 1, 2026. This checks the notebook prediction helper and the synthetic evaluation, not execution of the full notebook. The dependency pins reflect that environment; clean-environment installation and cross-platform compatibility remain to be checked. No external datasets, credentials, or paid services are required for these tests.
+
+## Experiment CLI
+
+Run a repeatable experiment with a chosen seed and save its report:
+
+```bash
+python src/evaluate_synthetic.py --seed 7 --output experiment-seed7.json
+```
+
+`--seed` defaults to 42 and must be nonnegative. Without `--output`, JSON is printed to stdout. Output files are created exclusively: an existing file raises an error and is preserved. Choose another filename for each experiment. The destination directory must already exist. Different seeds change both synthetic data and the split; comparing seeds measures this toy simulation's sensitivity, not real-world model reliability.
+
+Three CLI tests passed locally on November 2, 2026: JSON/seed handling, negative-seed rejection, and protection of an existing output file. The full test suite and a clean dependency installation were not rerun in that check.
