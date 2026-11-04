@@ -64,3 +64,11 @@ python -m unittest discover -s tests -p test_retrieval.py -v
 The retrieval demo uses only Python's standard library and three explicitly invented policy passages embedded in the source. It ranks term-frequency vectors by cosine similarity and returns source IDs, text, and scores; zero-overlap queries return an empty list. Stable source IDs provide a foundation for future answer citations. These are fictional examples, not insurance guidance or employer documents.
 
 This is a lexical retrieval baseline, not a complete RAG system: it has no LLM, embeddings, clinical knowledge, or coverage decision logic. Positive word overlap alone does not establish relevance. Four tests and a CLI smoke check passed locally on November 3, 2026; the three known-query examples are smoke fixtures, not an independent retrieval benchmark. The existing regression suite and clean dependency installation were not rerun for this addition. Next: add a separate retrieval evaluation set and measure ranking/abstention before integrating generation.
+
+## Retrieval evaluation
+
+From the repository root run `python -m src.evaluate_retrieval`. Run metric checks with `python -m unittest discover -s tests -p test_retrieval_metrics.py -v`.
+
+Six authored synthetic queries cover direct matches, a paraphrase, and unsupported questions. Relevant source IDs are explicit in `src/evaluate_retrieval.py`. Recall@2 and MRR@2 are averaged over four answerable queries; abstention rate is averaged over two unanswerable queries. Per-query retrieved and relevant IDs are included for inspection. This tiny developer-authored set is not an independent benchmark.
+
+On November 4, 2026, the unchanged lexical retriever scored recall@2 = 0.75, MRR@2 = 0.75, and unanswerable abstention = 0.5 on this set. It missed the submission-tracking paraphrase and returned irrelevant passages for a dental-coverage question because of shared words. Three metric tests passed using hand-calculated ranking and abstention expectations. The full existing suite was not rerun. These results identify limitations rather than establishing healthcare readiness. Next: improve irrelevant-match rejection while preserving relevant evidence.
