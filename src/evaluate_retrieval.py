@@ -1,0 +1,37 @@
+"""Small authored synthetic evaluation; not an independent real-world benchmark."""
+import json
+from src.retrieve_demo import retrieve
+
+CASES = (
+    ("Which documents support an appeal?", {"demo-appeal"}),
+    ("Where is my claim status reference?", {"demo-status"}),
+    ("What receipt is needed for reimbursement?", {"demo-receipt"}),
+    ("How can I track a submission?", {"demo-status"}),
+    ("astronomy telescope", set()),
+    ("Does the policy cover dental implants?", set()),
+)
+
+def evaluate_cases(cases, search=retrieve, k=2):
+    if not cases:
+        raise ValueError("cases must not be empty")
+    positive, negative, recalls, reciprocal, abstentions = 0, 0, [], [], []
+    details = []
+    for query, relevant in cases:
+        ids = [row["id"] for row in search(query, k=k)][:k]
+        if relevant:
+            positive += 1
+            recalls.append(len(set(ids) & relevant) / len(relevant))
+            reciprocal.append(next((1 / rank for rank, doc in enumerate(ids, 1) if doc in relevant), 0))
+        else:
+            negative += 1
+            abstentions.append(float(not ids))
+        details.append({"query": query, "relevant_ids": sorted(relevant), "retrieved_ids": ids})
+    return {"synthetic_only": True, "k": k, "answerable_cases": positive,
+            "unanswerable_cases": negative,
+            "recall_at_k": sum(recalls)/positive if positive else None,
+            "mrr_at_k": sum(reciprocal)/positive if positive else None,
+            "unanswerable_abstention_rate": sum(abstentions)/negative if negative else None,
+            "cases": details}
+
+if __name__ == "__main__":
+    print(json.dumps(evaluate_cases(CASES), indent=2))
