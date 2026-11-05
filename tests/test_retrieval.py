@@ -21,3 +21,8 @@ class RetrievalTests(unittest.TestCase):
     def test_limit_and_determinism(self):
         self.assertEqual(len(retrieve("fictional policy", 1)), 1)
         self.assertEqual(retrieve("fictional policy"), retrieve("fictional policy"))
+
+    def test_filter_rejects_boilerplate_only_matches(self):
+        self.assertEqual(retrieve("Does the policy cover dental implants?", ignore_common=True), [])
+        self.assertEqual(retrieve("Where is my claim status reference?", ignore_common=True)[0]["id"],
+                         "demo-status")
