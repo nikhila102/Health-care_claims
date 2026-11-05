@@ -1,4 +1,6 @@
 """Small authored synthetic evaluation; not an independent real-world benchmark."""
+import argparse
+from functools import partial
 import json
 from src.retrieve_demo import retrieve
 
@@ -34,4 +36,11 @@ def evaluate_cases(cases, search=retrieve, k=2):
             "cases": details}
 
 if __name__ == "__main__":
-    print(json.dumps(evaluate_cases(CASES), indent=2))
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--compare", action="store_true")
+    args = parser.parse_args()
+    report = evaluate_cases(CASES)
+    if args.compare:
+        report = {"baseline": report, "filtered": evaluate_cases(
+            CASES, search=partial(retrieve, ignore_common=True))}
+    print(json.dumps(report, indent=2))
