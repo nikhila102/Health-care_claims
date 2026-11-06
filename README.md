@@ -76,3 +76,14 @@ On November 4, 2026, the unchanged lexical retriever scored recall@2 = 0.75, MRR
 Compare the original lexical baseline with an optional filter for common words and policy boilerplate by running `python -m src.evaluate_retrieval --compare`. Try the filter interactively with `python src/retrieve_demo.py --ignore-common "Does the policy cover dental implants?"`.
 
 On the same six synthetic queries, the filter raised unsupported-question abstention from 1/2 to 2/2. Recall@2 and MRR@2 stayed at 0.75. The submission-tracking paraphrase still missed. The filter was developed using these cases, so the comparison is diagnostic. Eight retrieval and metric tests passed locally on November 5, 2026.
+
+### Fresh synthetic challenge queries
+
+Run `python -m src.evaluate_retrieval --compare --split challenge` from the repository root. The challenge split adds six answerable and four unsupported queries written after the filter was fixed. It includes paraphrases and unsupported requests with words shared by relevant policy passages.
+
+| Mode | Recall@2 | MRR@2 | Unsupported questions correctly declined |
+| --- | ---: | ---: | ---: |
+| Baseline | 4/6 | 4/6 | 0/4 |
+| Common-term filter | 3/6 | 3/6 | 1/4 |
+
+The filter reduced some irrelevant matches but also lost one relevant match on these examples. Treat this small authored set as a diagnostic. Both split commands were checked for repeatable JSON, expected case counts, disjoint query text, and valid source labels.
