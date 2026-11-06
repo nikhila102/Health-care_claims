@@ -13,6 +13,20 @@ CASES = (
     ("Does the policy cover dental implants?", set()),
 )
 
+# Authored after the common-term filter was frozen.
+CHALLENGE_CASES = (
+    ("Can I check status with a reference?", {"demo-status"}),
+    ("Is an itemized receipt mandatory?", {"demo-receipt"}),
+    ("Do I need a denial notice to appeal?", {"demo-appeal"}),
+    ("How far along is my submission?", {"demo-status"}),
+    ("What paperwork helps me contest a rejection?", {"demo-appeal"}),
+    ("What proof of purchase do I need to get paid back?", {"demo-receipt"}),
+    ("Does the policy cover orthodontics?", set()),
+    ("Can I appeal a parking ticket?", set()),
+    ("What is the maximum reimbursement amount?", set()),
+    ("Is a claim reference needed for a password reset?", set()),
+)
+
 def evaluate_cases(cases, search=retrieve, k=2):
     if not cases:
         raise ValueError("cases must not be empty")
@@ -38,9 +52,11 @@ def evaluate_cases(cases, search=retrieve, k=2):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--compare", action="store_true")
+    parser.add_argument('--split', choices=('development', 'challenge'), default='development')
     args = parser.parse_args()
-    report = evaluate_cases(CASES)
+    cases = CASES if args.split == 'development' else CHALLENGE_CASES
+    report = evaluate_cases(cases)
     if args.compare:
         report = {"baseline": report, "filtered": evaluate_cases(
-            CASES, search=partial(retrieve, ignore_common=True))}
+            cases, search=partial(retrieve, ignore_common=True))}
     print(json.dumps(report, indent=2))
