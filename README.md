@@ -87,3 +87,9 @@ Run `python -m src.evaluate_retrieval --compare --split challenge` from the repo
 | Common-term filter | 3/6 | 3/6 | 1/4 |
 
 The filter reduced some irrelevant matches but also lost one relevant match on these examples. Treat this small authored set as a diagnostic. Both split commands were checked for repeatable JSON, expected case counts, disjoint query text, and valid source labels.
+
+### Configurable ranking cutoff
+
+Use `python -m src.evaluate_retrieval --compare --split challenge --k 1` to evaluate only the first retrieved passage. The default cutoff remains 2. The evaluation API rejects non-integer, boolean, zero, and negative cutoffs before calling retrieval. The CLI requires a positive integer.
+
+On November 7, 2026, all 15 repository unittest checks passed together in the available environment, including hand-calculated rank-sensitive metric checks and the notebook prediction regression check. The challenge comparison CLI also ran successfully with `--k 1`. Clean dependency installation and execution of the full notebook remain pending.
