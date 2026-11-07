@@ -28,6 +28,8 @@ CHALLENGE_CASES = (
 )
 
 def evaluate_cases(cases, search=retrieve, k=2):
+    if isinstance(k, bool) or not isinstance(k, int) or k < 1:
+        raise ValueError("k must be a positive integer")
     if not cases:
         raise ValueError("cases must not be empty")
     positive, negative, recalls, reciprocal, abstentions = 0, 0, [], [], []
@@ -51,12 +53,15 @@ def evaluate_cases(cases, search=retrieve, k=2):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--k", type=int, default=2, help="Positive retrieval cutoff")
     parser.add_argument("--compare", action="store_true")
     parser.add_argument('--split', choices=('development', 'challenge'), default='development')
     args = parser.parse_args()
+    if args.k < 1:
+        parser.error("--k must be positive")
     cases = CASES if args.split == 'development' else CHALLENGE_CASES
-    report = evaluate_cases(cases)
+    report = evaluate_cases(cases, k=args.k)
     if args.compare:
         report = {"baseline": report, "filtered": evaluate_cases(
-            cases, search=partial(retrieve, ignore_common=True))}
+            cases, k=args.k, search=partial(retrieve, ignore_common=True))}
     print(json.dumps(report, indent=2))
