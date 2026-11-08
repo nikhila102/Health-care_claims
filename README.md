@@ -93,3 +93,9 @@ The filter reduced some irrelevant matches but also lost one relevant match on t
 Use `python -m src.evaluate_retrieval --compare --split challenge --k 1` to evaluate only the first retrieved passage. The default cutoff remains 2. The evaluation API rejects non-integer, boolean, zero, and negative cutoffs before calling retrieval. The CLI requires a positive integer.
 
 On November 7, 2026, all 15 repository unittest checks passed together in the available environment, including hand-calculated rank-sensitive metric checks and the notebook prediction regression check. The challenge comparison CLI also ran successfully with `--k 1`. Clean dependency installation and execution of the full notebook remain pending.
+
+## Clean environment verification
+
+Run `python scripts/verify_clean.py` from a checkout with Python and venv support. The script creates a temporary isolated environment, installs `requirements.txt`, runs `pip check`, executes all unittest checks, then runs the retrieval challenge comparison and synthetic regression demo. Failed commands stop verification and return a nonzero exit status. The temporary environment is cleaned up afterward. Package installation requires network access or a populated pip cache.
+
+This complete command passed on November 8, 2026 with Python 3.12 on Linux, including all 15 tests and both evaluation entry points. Earlier notes about pending clean installation describe historical checks. Other Python versions and operating systems remain unverified, and full notebook execution remains pending.
