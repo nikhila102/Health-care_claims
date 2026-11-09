@@ -99,3 +99,11 @@ On November 7, 2026, all 15 repository unittest checks passed together in the av
 Run `python scripts/verify_clean.py` from a checkout with Python and venv support. The script creates a temporary isolated environment, installs `requirements.txt`, runs `pip check`, executes all unittest checks, then runs the retrieval challenge comparison and synthetic regression demo. Failed commands stop verification and return a nonzero exit status. The temporary environment is cleaned up afterward. Package installation requires network access or a populated pip cache.
 
 This complete command passed on November 8, 2026 with Python 3.12 on Linux, including all 15 tests and both evaluation entry points. Earlier notes about pending clean installation describe historical checks. Other Python versions and operating systems remain unverified, and full notebook execution remains pending.
+
+## Structured evidence response
+
+Run `python -m src.evidence_response "appeal denial"` from the repository root. The JSON includes a schema version, synthetic-data flag, original query, status, and citations containing source IDs, exact quotes, and retrieval scores. `--k` controls the maximum citations. Empty retrieval returns `no_evidence` with an empty citation list. Invalid queries and cutoffs produce a command-line usage error.
+
+This interface selects evidence using the common-term filter. Lexical matches still require relevance review, especially for unsupported requests sharing policy words. `evidence_found` indicates retrieval overlap only. The response quotes fictional passages directly and provides an integration boundary for future generation and validation.
+
+Three focused tests passed on November 9, 2026, covering exact citation provenance, empty-result behavior, JSON CLI output, and invalid CLI cutoff handling. The existing full suite and clean-install workflow were not rerun for this addition.
