@@ -107,3 +107,11 @@ Run `python -m src.evidence_response "appeal denial"` from the repository root. 
 This interface selects evidence using the common-term filter. Lexical matches still require relevance review, especially for unsupported requests sharing policy words. `evidence_found` indicates retrieval overlap only. The response quotes fictional passages directly and provides an integration boundary for future generation and validation.
 
 Three focused tests passed on November 9, 2026, covering exact citation provenance, empty-result behavior, JSON CLI output, and invalid CLI cutoff handling. The existing full suite and clean-install workflow were not rerun for this addition.
+
+## Evidence response audit
+
+Run `python -m src.evaluate_responses` from the repository root. This command evaluates the actual structured response function on all ten authored challenge queries. It reuses retrieval ranking metrics and includes every response for inspection. Exact-source-quote rate counts citations whose source ID and full quote match the fictional corpus.
+
+On November 10, 2026, the run produced six citations with exact-source-quote rate 1.0, recall@2 and MRR@2 of 0.5 across six answerable questions, and correct abstention on one of four unsupported questions. Exact quoting measures provenance. Relevance is measured separately against the authored source labels. The results expose the limits of lexical evidence selection on this tiny synthetic corpus.
+
+The module CLI completed locally. Checks confirmed repeatable results, ten responses, exact source quotes, and consistency between empty citations and response status. The full unittest suite and clean-install workflow were not rerun for this audit. Next: improve relevance handling before building answer generation on these responses.
