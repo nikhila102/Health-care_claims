@@ -115,3 +115,9 @@ Run `python -m src.evaluate_responses` from the repository root. This command ev
 On November 10, 2026, the run produced six citations with exact-source-quote rate 1.0, recall@2 and MRR@2 of 0.5 across six answerable questions, and correct abstention on one of four unsupported questions. Exact quoting measures provenance. Relevance is measured separately against the authored source labels. The results expose the limits of lexical evidence selection on this tiny synthetic corpus.
 
 The module CLI completed locally. Checks confirmed repeatable results, ten responses, exact source quotes, and consistency between empty citations and response status. The full unittest suite and clean-install workflow were not rerun for this audit. Next: improve relevance handling before building answer generation on these responses.
+
+### Minimum evidence score
+
+Use `python -m src.evidence_response "appeal denial" --min-score 0.4` to discard citations below a lexical similarity cutoff. The default is zero, and the cutoff is inclusive. A response returns `no_evidence` if no citation meets it. Scores measure word overlap and are uncalibrated.
+
+Compare `python -m src.evaluate_responses --min-score 0` with `python -m src.evaluate_responses --min-score 0.4`. On the ten synthetic challenge queries, correct abstentions increased from 1/4 to 3/4, recall@2 stayed at 3/6, and total citations fell from six to four. This is an exploratory comparison on a small authored set. Two focused tests and both audit CLI runs passed locally.
