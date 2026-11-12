@@ -121,3 +121,9 @@ The module CLI completed locally. Checks confirmed repeatable results, ten respo
 Use `python -m src.evidence_response "appeal denial" --min-score 0.4` to discard citations below a lexical similarity cutoff. The default is zero, and the cutoff is inclusive. A response returns `no_evidence` if no citation meets it. Scores measure word overlap and are uncalibrated.
 
 Compare `python -m src.evaluate_responses --min-score 0` with `python -m src.evaluate_responses --min-score 0.4`. On the ten synthetic challenge queries, correct abstentions increased from 1/4 to 3/4, recall@2 stayed at 3/6, and total citations fell from six to four. This is an exploratory comparison on a small authored set. Two focused tests and both audit CLI runs passed locally.
+
+### Paired intent evaluation
+
+Run `python -m src.evaluate_responses --split intent-pairs --min-score 0.4` and repeat with `--min-score 0` for comparison. The six synthetic questions form three pairs. Each pair shares key terms while changing whether the fictional corpus supports the request.
+
+With the cutoff fixed at 0.4 before writing these cases, relevant evidence appeared for all three supported questions at both settings. Correct abstention increased from zero to one of three unsupported questions. Two unsupported questions still returned citations despite the cutoff. This small authored split illustrates a limitation of relying on word overlap to distinguish intent.
