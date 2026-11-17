@@ -1,6 +1,32 @@
-# Healthcare cost regression
+# Healthcare claims evidence workflow
 
-An educational medical-cost regression notebook. This repository currently contains exploratory analysis and a linear regression using age, BMI, and smoking status. It does not yet implement claims adjudication, RAG, agents, or a deployed API. The API, Docker, model, and training-script scaffolding is unfinished.
+This portfolio project pairs an offline claims evidence demo with a separate medical-cost regression experiment. The claims demo retrieves fictional policy passages and routes questions to evidence review or human review. It uses lexical retrieval and rule-based routing. The regression experiment evaluates a linear model against a baseline on synthetic held-out data.
+
+## Quick start
+
+Run from the repository root with Python 3.10 or newer. These commands require no extra packages.
+
+```bash
+python -m src.claims_workflow "appeal denial" --scope demo-policy
+python -m src.claims_workflow "appeal denial" --scope external
+python -m unittest discover -s tests -p test_claims_workflow.py -v
+```
+
+The first command returns `evidence_review` with an exact quote from `demo-appeal` as candidate evidence. The second returns `human_review` with an empty citation list. The caller supplies policy scope. Questions with unverified scope or insufficient evidence also go to human review.
+
+## Evaluate routing and citation relevance
+
+```bash
+python -m src.evaluate_workflow
+python -m src.evaluate_intent
+```
+
+| Diagnostic | Observed result on authored synthetic cases |
+| --- | --- |
+| Scope routing | All 12 external or unknown cases went to human review without citations. Two of three unsupported demo-policy questions still returned citations. |
+| Experimental intent check | Unsupported questions with citations fell from 2/3 to 0/3, while supported questions with a relevant citation fell from 4/4 to 3/4. |
+
+The intent check runs only in the evaluation script. These small diagnostics expose how word overlap can mislead retrieval. The demo provides candidate evidence for review using fictional policies.
 
 ## Setup and checks
 
