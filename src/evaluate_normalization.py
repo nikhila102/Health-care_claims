@@ -4,15 +4,32 @@ Run from the repository root: python -m src.evaluate_normalization
 Uses Python's standard library. The 0.4 cutoff matches the evidence workflow.
 Aliases were informed by these cases, so this is a development diagnostic.
 """
+import argparse
 import json
 
 from src.evaluate_intent import PARAPHRASE_CASES
 from src.retrieve_demo import retrieve
 
 
-def evaluate_normalization():
+# Written after TOKEN_ALIASES was fixed. These are authored diagnostics.
+FRESH_CASES = (
+    ("Appeals require which supporting documents?", "demo-appeal"),
+    ("For reimbursement, are receipts required?", "demo-receipt"),
+    ("Can I check the claim status by reference?", "demo-status"),
+    ("What must I attach when appealing?", "demo-appeal"),
+    ("Will appealing guarantee approval?", None),
+    ("How many days until I am reimbursed?", None),
+    ("Can receipts from another insurer be reimbursed?", None),
+    ("Can the claim reference reveal my doctor's address?", None),
+)
+
+
+def evaluate_normalization(split="development"):
+    splits = {"development": PARAPHRASE_CASES, "fresh": FRESH_CASES}
+    if split not in splits:
+        raise ValueError(f"Unknown split: {split}")
     cases = []
-    for query, expected in PARAPHRASE_CASES:
+    for query, expected in splits[split]:
         row = {"query": query, "expected_source": expected}
         for mode, enabled in (("baseline", False), ("normalized", True)):
             matches = retrieve(query, ignore_common=True, normalize_terms=enabled)
@@ -41,4 +58,7 @@ def evaluate_normalization():
 
 
 if __name__ == "__main__":
-    print(json.dumps(evaluate_normalization(), indent=2))
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--split", choices=("development", "fresh"), default="development")
+    args = parser.parse_args()
+    print(json.dumps(evaluate_normalization(args.split), indent=2))
