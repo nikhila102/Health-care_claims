@@ -53,6 +53,15 @@ def evaluate_normalization(split="development"):
             }
             for mode in ("baseline", "normalized")
         },
+        "citation_changes": [
+            {
+                "query": row["query"],
+                "expected_source": row["expected_source"],
+                "added_source_ids": sorted(set(row["normalized"]) - set(row["baseline"])),
+                "removed_source_ids": sorted(set(row["baseline"]) - set(row["normalized"])),
+            }
+            for row in cases if row["baseline"] != row["normalized"]
+        ],
         "cases": cases,
     }
 
