@@ -14,6 +14,29 @@ python -m unittest discover -s tests -p test_claims_workflow.py -v
 
 The first command returns `evidence_review` with an exact quote from `demo-appeal` as candidate evidence. The second returns `human_review` with an empty citation list. The caller supplies policy scope. Questions with unverified scope or insufficient evidence also go to human review.
 
+## Route using application policy metadata
+
+The policy-context entry point maps a fictional policy ID to the workflow scope. Run from the repository root with Python 3.10 or newer. It uses only the standard library.
+
+```bash
+python -m src.policy_context "appeal denial" --policy-id demo-policy-v1
+python -m src.policy_context "appeal denial"
+python -m src.policy_context "appeal denial" --policy-id another-policy
+python -m unittest discover -s tests -p test_policy_context.py -v
+```
+
+| Policy metadata | Route for the example query | Reason |
+| --- | --- | --- |
+| Exact ID `demo-policy-v1` | `evidence_review` | `candidate_evidence` |
+| Omitted | `human_review` | `scope_unverified` |
+| Any other nonempty ID | `human_review` | `external_policy` |
+
+In a future application, obtain the policy ID from a verified server-side record associated with the request. The CLI accepts it directly to demonstrate routing. Authentication and policy ownership verification remain application integration work.
+
+The mapping uses an exact ID match, including case and whitespace. Blank values and nontext metadata raise a validation error. Known-policy requests still depend on retrieval relevance, and weak matches go to human review.
+
+All four policy-context tests and the three example commands above passed locally on November 27, 2026. The full repository suite was outside this validation.
+
 ## Evaluate routing and citation relevance
 
 ```bash
